@@ -11,14 +11,15 @@ for filename in fastq_input:
     new_filename = new_filename.replace('raw_data', 'processed_data/fastqc')
     fastqc_output.append(new_filename)
 
-fastq_trimmed = []
+fastq_paired_deduped = []
 for filename in fastq_input:
-    new_filename = filename.replace('raw_data', 'processed_data/trimmed_reads')
-    new_filename = new_filename.replace('R1_001.fastq', 'R1_001_val_1.fq')
-    new_filename = new_filename.replace('R2_001.fastq', 'R2_001_val_2.fq')
-    fastq_trimmed.append(new_filename)
+    new_filename = filename.replace('raw_data', 'processed_data/deduped_reads')
+    new_filename = new_filename.replace('.fastq', '_deduped.fastq.paired.fq')
+    fastq_paired_deduped.append(new_filename)
 
-multiqc_output =  "processed_data/fastqc/sample_fastq/multiqc_report.html",
+multiqc_output =  "processed_data/fastqc/sample_fastq/multiqc_report.html"
+
+print(fastq_paired_deduped)
 
 ######################
 # Rules
@@ -27,7 +28,7 @@ multiqc_output =  "processed_data/fastqc/sample_fastq/multiqc_report.html",
 rule all:
     input:
         multiqc_output,
-        fastq_trimmed
+        fastq_paired_deduped
 
 rule clean:
     shell:
@@ -60,6 +61,31 @@ rule run_trim:
         "processed_data/trimmed_reads/sample_fastq/{sample}_R1_001_val_1.fq",
         "processed_data/trimmed_reads/sample_fastq/{sample}_R2_001_val_2.fq"
     shell:
-	    """
-        trim_galore --paired --small_rna --dont_gzip --output_dir processed_data/trimmed_reads/sample_fastq/ {input}
-        """
+	    "trim_galore --paired --small_rna --dont_gzip --output_dir processed_data/trimmed_reads/sample_fastq/ {input}"
+
+rule run_dedup:
+    input:
+        "processed_data/trimmed_reads/sample_fastq/{sample}_R{direction}_001_val_{direction}.fq"
+    output:
+        "processed_data/deduped_reads/sample_fastq/{sample}_R{direction}_001_deduped.fastq"
+    shell:
+	    "seqkit rmdup -s -o {output} {input}"
+
+rule run_pair:
+    input:
+        "processed_data/deduped_reads/sample_fastq/{sample}_R1_001_deduped.fastq",
+        "processed_data/deduped_reads/sample_fastq/{sample}_R2_001_deduped.fastq"
+    output:
+        "processed_data/deduped_reads/sample_fastq/{sample}_R1_001_deduped.fastq.paired.fq",
+        "processed_data/deduped_reads/sample_fastq/{sample}_R2_001_deduped.fastq.paired.fq"
+    shell:
+        "fastq_pair {input}"
+
+# rule get_genomes:
+
+rule prealignment:
+    input:
+    ouput:
+    shell:
+
+rule alignment:

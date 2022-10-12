@@ -52,6 +52,7 @@ docutils=0.19=py310hff52083_0
 dpath=2.0.6=py310hff52083_1
 dropbox=11.34.0=pyhd8ed1ab_0
 expat=2.4.9=h27087fc_0
+fastq-pair=1.0=h87f3376_3
 fastqc=0.11.9=hdfd78af_1
 filechunkio=1.8=py_2
 filelock=3.8.0=pyhd8ed1ab_0
@@ -200,6 +201,7 @@ rich=12.6.0=pyhd8ed1ab_0
 rich-click=1.5.2=pyhd8ed1ab_0
 rsa=4.9=pyhd8ed1ab_0
 s3transfer=0.6.0=pyhd8ed1ab_0
+seqkit=2.3.1=h9ee0642_0
 setuptools=65.4.1=pyhd8ed1ab_0
 setuptools-scm=7.0.5=pyhd8ed1ab_0
 simplejson=3.17.6=py310h5764c6d_1
